@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Communications Hub - LocalConnect SA</title>
+    	<link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        :root {
+            --primary: #088178;
+            --secondary: #2575fc;
+            --accent: #ff9900;
+            --dark: #333;
+            --light: #f8f9fa;
+            --gray: #777;
+            --border: #e0e0e0;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+        }
+
+        body {
+            background: #f0f2f5;
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+
+        .comms-title {
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .comms-title h1 {
+            font-size: 28px;
+            color: var(--dark);
+        }
+
+        .comms-title p {
+            color: var(--gray);
+            font-size: 16px;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .notification-btn, .profile-btn {
+            position: relative;
+            background: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+
+        .notification-btn:hover, .profile-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--accent);
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-btn {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        /* Main Layout */
+        .comms-container {
+            display: flex;
+            gap: 25px;
+            flex: 1;
+        }
+
+        .contacts-sidebar {
+            width: 300px;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+            outline: none;
+        }
+
+        .contacts-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: var(--light);
+            color: var(--gray);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .contacts-list {
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .contact-card {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .contact-card:hover {
+            background: rgba(106, 17, 203, 0.05);
+        }
+
+        .contact-card.active {
+            background: rgba(106, 17, 203, 0.1);
+            border-left: 3px solid var(--primary);
+        }
+
+        .contact-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-name {
+            font-weight: 600;
+            margin-bottom: 3px;
+        }
+
+        .contact-status {
+            font-size: 13px;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ccc;
+            margin-right: 8px;
+        }
+
+        .status-indicator.online {
+            background: var(--success);
+        }
+
+        .unread-count {
+            background: var(--primary);
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Chat Area */
+        .chat-area {
+            flex: 1;
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chat-info {
+            flex: 1;
+        }
+
+        .chat-name {
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .chat-status {
+            font-size: 13px;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light);
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            background: rgba(106, 17, 203, 0.1);
+            color: var(--primary);
+        }
+
+        .messages-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            background: #f9f9ff;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 15px;
+            border-radius: 15px;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.sent {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.received {
+            background: white;
+            border: 1px solid var(--border);
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            opacity: 0.8;
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .message-input {
+            padding: 20px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 15px;
+            background: white;
+        }
+
+        .input-group {
+            flex: 1;
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+            outline: none;
+        }
+
+        .input-actions {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-actions i {
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .input-actions i:hover {
+            color: var(--primary);
+        }
+
+        .send-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .send-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(37, 117, 252, 0.3);
+        }
+
+        /* Support Section */
+        .support-section {
+            width: 300px;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .support-options {
+            margin-bottom: 25px;
+        }
+
+        .support-card {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            background: var(--light);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .support-card:hover {
+            background: rgba(106, 17, 203, 0.05);
+            transform: translateX(5px);
+        }
+
+        .support-card i {
+            font-size: 20px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .support-card h3 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .support-card p {
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        .faq-list {
+            list-style: none;
+        }
+
+        .faq-item {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            font-size: 14px;
+            color: var(--gray);
+            margin-top: 5px;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 200px;
+        }
+
+        .contact-form {
+            margin-top: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+            outline: none;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 117, 252, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .support-section {
+                display: none;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .comms-container {
+                flex-direction: column;
+            }
+            
+            .contacts-sidebar, .chat-area {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .comms-title {
+                order: 1;
+                width: 100%;
+            }
+            
+            .logo {
+                order: 2;
+            }
+            
+            .user-actions {
+                order: 3;
+            }
+        }
+    </style> 
+</head>
+<body>
+    <div class="container">
+	<section id="header">
+		<div>
+			<ul id="navbar">
+				<li><a href="Home.html">Home</a></li>
+				<li><a href="products.html">Shop</a></li>
+				<li><a href="sell.html">Sell</a></li>
+				<li><a class="active" href="messages.html">Messages</a></li>
+				<li><a href="profile.html">Profile</a></li>
+				<li id="lg-bag"><a href="cart.html"><i class="fas fa-shopping-bag"></i></a></li>
+				<a href="#" id="close"><i class="fa fa-times"></i></a>
+			</ul>
+		
+		</div>
+		<div id="mobile">
+			<a href="cart.html"><i class="fas fa-shopping-bag"></i></a>
+			<i id="bar" class="fas fa-outdent"></i>"
+		</div>
+	
+	</section>
+
+        <div class="comms-container">
+            
+            <div class="contacts-sidebar">
+                
+                <div class="contacts-tabs">
+                    <button class="tab-btn active"><i class="fas fa-comments"></i> Chats</button>
+                </div>
+                
+                <div class="contacts-list">
+                    <div class="contact-card active">
+                        <div class="contact-avatar">TS</div>
+                        <div class="contact-info">
+                            <div class="contact-name">Tech Support</div>
+                            <div class="contact-status">
+                                <span class="status-indicator online"></span> Online - We're here to help
+                            </div>
+                        </div>
+                        <div class="unread-count">3</div>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-avatar">MJ</div>
+                        <div class="contact-info">
+                            <div class="contact-name">Mama J's Spaza Shop</div>
+                            <div class="contact-status">
+                                <span class="status-indicator"></span> Order #LC12345
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-avatar">GT</div>
+                        <div class="contact-info">
+                            <div class="contact-name">Gadget Town</div>
+                            <div class="contact-status">
+                                <span class="status-indicator"></span> Your order has shipped
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-avatar">SB</div>
+                        <div class="contact-info">
+                            <div class="contact-name">Sipho B</div>
+                            <div class="contact-status">
+                                <span class="status-indicator online"></span> Interested in your listing
+                            </div>
+                        </div>
+                        <div class="unread-count">1</div>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-avatar">LC</div>
+                        <div class="contact-info">
+                            <div class="contact-name">LocalConnect Admin</div>
+                            <div class="contact-status">
+                                <span class="status-indicator online"></span> Platform updates
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-avatar">FK</div>
+                        <div class="contact-info">
+                            <div class="contact-name">FreshKasi Foods</div>
+                            <div class="contact-status">
+                                <span class="status-indicator"></span> New specials this week
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-card">
+                        <div class="contact-avatar">DG</div>
+                        <div class="contact-info">
+                            <div class="contact-name">Delivery Guys</div>
+                            <div class="contact-status">
+                                <span class="status-indicator"></span> Your package is arriving today
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="chat-area">
+                <div class="chat-header">
+                    <div class="contact-avatar">TS</div>
+                    <div class="chat-info">
+                        <div class="chat-name">Tech Support</div>
+                        <div class="chat-status">
+                            <span class="status-indicator online"></span> Online - We're here to help
+                        </div>
+                    </div>
+                    <div class="chat-actions">
+                        <div class="action-btn"><i class="fas fa-phone"></i></div>
+                        <div class="action-btn"><i class="fas fa-video"></i></div>
+                        <div class="action-btn"><i class="fas fa-ellipsis-v"></i></div>
+                    </div>
+                </div>
+                
+                <div class="messages-container" id="messagesContainer">
+                    <div class="message received">
+                        Hello! Welcome to LocalConnect Support. How can we assist you today?
+                        <div class="message-time">10:02 AM</div>
+                    </div>
+                    
+                    <div class="message sent">
+                        Hi there! I'm having trouble with my seller dashboard. The analytics section isn't loading.
+                        <div class="message-time">10:03 AM</div>
+                    </div>
+                    
+                    <div class="message received">
+                        Sorry to hear that. Let me help you troubleshoot. Could you please tell me which browser you're using?
+                        <div class="message-time">10:04 AM</div>
+                    </div>
+                    
+                    <div class="message sent">
+                        I'm using Chrome on Windows. It was working fine yesterday.
+                        <div class="message-time">10:05 AM</div>
+                    </div>
+                    
+                    <div class="message received">
+                        Thanks for that info. We've had a small update overnight. Could you try clearing your cache? Here's how:
+                        1. Open Chrome settings
+                        2. Go to Privacy and security
+                        3. Click "Clear browsing data"
+                        4. Select "Cached images and files"
+                        5. Click "Clear data"
+                        <div class="message-time">10:06 AM</div>
+                    </div>
+                    
+                    <div class="message sent">
+                        That worked! Thank you so much. The dashboard is loading perfectly now.
+                        <div class="message-time">10:08 AM</div>
+                    </div>
+                    
+                    <div class="message received">
+                        Great to hear! Is there anything else I can help with today?
+                        <div class="message-time">10:09 AM</div>
+                    </div>
+                </div>
+                
+                <div class="message-input">
+                    <div class="input-group">
+                        <input type="text" placeholder="Type your message..." id="messageInput">
+                        <div class="input-actions">
+                            <i class="fas fa-paperclip"></i>
+                            <i class="fas fa-image"></i>
+                            <i class="fas fa-smile"></i>
+                        </div>
+                    </div>
+                    <button class="send-btn" id="sendBtn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+            
+            
+            <div class="support-section">
+                <div class="section-title">
+                    <i class="fas fa-headset"></i>
+                    Support Center
+                </div>
+                
+                
+                <div class="section-title">
+                    <i class="fas fa-question-circle"></i>
+                    Frequently Asked Questions
+                </div>
+                
+                <ul class="faq-list">
+                    <li class="faq-item">
+                        <div class="faq-question">
+                            How do I track my order?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            You can track your order from the Orders section in your profile. You'll receive real-time updates on your delivery status.
+                        </div>
+                    </li>
+                    
+                    <li class="faq-item">
+                        <div class="faq-question">
+                            What payment methods do you accept?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            We accept credit/debit cards, mobile money (M-Pesa, Vodacom), and cash on delivery for select products.
+                        </div>
+                    </li>
+                    
+                    <li class="faq-item">
+                        <div class="faq-question">
+                            How do I become a verified seller?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            To become a verified seller, complete your profile, submit valid identification, and maintain a 4.5+ rating for 3 months.
+                        </div>
+                    </li>
+                    
+                    <li class="faq-item">
+                        <div class="faq-question">
+                            How long does delivery take?
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            Delivery times vary by location and seller. Most urban areas receive orders within 1-3 days, rural areas within 3-7 days.
+                        </div>
+                    </li>
+                </ul>
+                
+                <div class="contact-form">
+                    <div class="section-title">
+                        <i class="fas fa-envelope"></i>
+                        Contact Support
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <select>
+                            <option>Select an issue</option>
+                            <option>Account Problem</option>
+                            <option>Payment Issue</option>
+                            <option>Technical Support</option>
+                            <option>Report a User</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea placeholder="Describe your issue in detail..."></textarea>
+                    </div>
+                    
+                    <button class="submit-btn">Send Message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+       
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const messagesContainer = document.getElementById('messagesContainer');
+        
+    
+        function sendMessage() {
+            const messageText = messageInput.value.trim();
+            if (messageText) {
+                const timestamp = new Date();
+                const hours = timestamp.getHours();
+                const minutes = timestamp.getMinutes();
+                const formattedTime = `${hours}:${minutes < 10 ? '0' + minutes : minutes} ${hours >= 12 ? 'PM' : 'AM'}`;
+                
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message', 'sent');
+                messageElement.innerHTML = `
+                    ${messageText}
+                    <div class="message-time">${formattedTime}</div>
+                `;
+                
+                messagesContainer.appendChild(messageElement);
+                messageInput.value = '';
+                
+                // Auto-scroll to bottom
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                
+                // Simulate reply after 1-3 seconds
+                setTimeout(simulateReply, Math.floor(Math.random() * 2000) + 1000);
+            }
+        }
+        
+        // Simulate a reply from support
+        function simulateReply() {
+            const replies = [
+                "Thanks for your message. How can I assist you further?",
+                "I understand your concern. Let me check that for you.",
+                "Could you provide more details about the issue?",
+                "I'm looking into this right now.",
+                "We're happy to help! Is there anything else?",
+                "I've documented your request and our team will follow up."
+            ];
+            
+            const randomReply = replies[Math.floor(Math.random() * replies.length)];
+            const timestamp = new Date();
+            const hours = timestamp.getHours();
+            const minutes = timestamp.getMinutes();
+            const formattedTime = `${hours}:${minutes < 10 ? '0' + minutes : minutes} ${hours >= 12 ? 'PM' : 'AM'}`;
+            
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', 'received');
+            messageElement.innerHTML = `
+                ${randomReply}
+                <div class="message-time">${formattedTime}</div>
+            `;
+            
+            messagesContainer.appendChild(messageElement);
+            
+            // Auto-scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        // Event listeners
+        sendBtn.addEventListener('click', sendMessage);
+        
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // FAQ toggle functionality
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(item => {
+            item.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+        
+        // Contact card selection
+        const contactCards = document.querySelectorAll('.contact-card');
+        contactCards.forEach(card => {
+            card.addEventListener('click', function() {
+                contactCards.forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Update chat header
+                const name = this.querySelector('.contact-name').textContent;
+                const status = this.querySelector('.contact-status').textContent;
+                
+                document.querySelector('.chat-name').textContent = name;
+                document.querySelector('.chat-status').innerHTML = `
+                    <span class="status-indicator online"></span> ${status}
+                `;
+                
+                // Clear unread count
+                const unread = this.querySelector('.unread-count');
+                if (unread) unread.style.display = 'none';
+            });
+        });
+        
+        // Initialize chat scroll position
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    </script>
+</body>
+</html>
